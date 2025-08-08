@@ -5,6 +5,8 @@ import com.omeshwar.project.airBNB.entity.Hotel;
 import com.omeshwar.project.airBNB.entity.Room;
 import com.omeshwar.project.airBNB.exception.ResourceNotFoundException;
 import com.omeshwar.project.airBNB.repository.HotelRepository;
+import com.omeshwar.project.airBNB.repository.RoomRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -16,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class HotelServiceImp implements HotelService{
+    private final RoomRepository roomRepository;
 
     private final HotelRepository hotelRepository;
     private final InventoryService inventoryService;
@@ -50,6 +53,7 @@ public class HotelServiceImp implements HotelService{
     }
 
     @Override
+    @Transactional
     public void deleteHotelByID(Long id) {
         log.info("Deleting hotel by id: {}",id);
         Hotel hotel = hotelRepository
@@ -57,7 +61,8 @@ public class HotelServiceImp implements HotelService{
                 .orElseThrow(()->new ResourceNotFoundException("Hotel Details not found with ID: "+id));
 
         for (Room room:hotel.getRooms()){
-            inventoryService.deleteFutureInventory(room);
+            inventoryService.deleteInventories(room);
+            roomRepository.deleteById(room.getId());
         }
         hotelRepository.delete(hotel);
     }
