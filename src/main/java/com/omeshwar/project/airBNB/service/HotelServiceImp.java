@@ -1,6 +1,8 @@
 package com.omeshwar.project.airBNB.service;
 
 import com.omeshwar.project.airBNB.dto.HotelDto;
+import com.omeshwar.project.airBNB.dto.HotelInfoDto;
+import com.omeshwar.project.airBNB.dto.RoomDto;
 import com.omeshwar.project.airBNB.entity.Hotel;
 import com.omeshwar.project.airBNB.entity.Room;
 import com.omeshwar.project.airBNB.exception.ResourceNotFoundException;
@@ -10,9 +12,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -89,5 +93,23 @@ public class HotelServiceImp implements HotelService{
                 .stream()
                 .map((element) -> modelMapper.map(element, HotelDto.class))
                 .toList();
+    }
+
+    @Override
+    public HotelInfoDto getHotelInfoByID(Long hotelID) {
+        Hotel hotel = hotelRepository
+                .findById(hotelID)
+                .orElseThrow(()->new ResourceNotFoundException("Hotel Details not found with ID: "+hotelID));
+
+        List<RoomDto> rooms = hotel
+                .getRooms()
+                .stream()
+                .map((element) -> modelMapper.map(element, RoomDto.class))
+                .toList();
+
+        return new HotelInfoDto(
+                modelMapper.map(hotel,HotelDto.class),
+                rooms
+        );
     }
 }
