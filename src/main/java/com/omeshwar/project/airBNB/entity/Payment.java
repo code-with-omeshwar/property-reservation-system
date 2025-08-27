@@ -18,7 +18,8 @@ public class Payment {
     private String transactionID;
     @Column(nullable = false, precision = 12,scale = 2)
     private BigDecimal amount;
-
+    @OneToOne(fetch = FetchType.LAZY)
+    private Booking booking;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status;

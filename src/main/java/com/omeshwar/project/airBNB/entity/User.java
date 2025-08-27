@@ -3,6 +3,7 @@ package com.omeshwar.project.airBNB.entity;
 
 import com.omeshwar.project.airBNB.entity.enums.Role;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
